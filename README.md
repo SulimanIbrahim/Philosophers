@@ -49,3 +49,19 @@ Finally, consider that philosopher P4 has finished eating and has freed chopstic
 
 
 This is the strategy using which we have ensured that all the philosophers have been served and avoided the circular wait situation.
+
+In programming, "fighting over resources" typically refers to a situation where multiple parts of a program (such as threads or processes) are competing for access to shared resources, like variables, files, or other system-level entities. This competition can lead to issues if not managed properly, and it's often a source of bugs and inefficiencies.
+
+Here's a simple analogy:
+
+Imagine you have a few people sharing a kitchen to cook their meals. The kitchen has limited resources like pots, pans, and utensils. Now, if two people try to use the same pot at the same time, or if they don't coordinate who gets to use the stove when, they might "fight over resources." This can lead to chaos, spills, and neither person getting their meal cooked properly.
+
+In programming, when multiple threads or processes access shared resources concurrently, without proper coordination or synchronization mechanisms, you can run into issues like:
+
+Race Conditions: When two or more threads try to modify shared data simultaneously, the final result might depend on the timing of their execution, leading to unpredictable behavior.
+
+Deadlocks: When different parts of a program are waiting for each other to release resources, and none of them can proceed, causing the entire program to come to a standstill.
+
+Data Corruption: If one part of a program is writing to a shared data structure while another part is reading from it, and they don't coordinate properly, it can result in corrupted data.
+
+To avoid these issues, programmers use synchronization techniques, such as locks, semaphores, and other concurrency control mechanisms, to ensure that only one thread or process can access a shared resource at a time. This helps in preventing conflicts and ensures the correct and reliable operation of the program.
