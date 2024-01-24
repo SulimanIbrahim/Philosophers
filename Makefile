@@ -1,5 +1,6 @@
 NAME = philo
-CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address
+# CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address -pthread 
+CFLAGS = -Wall -Wextra -Werror -g3  -pthread 
 RM = rm -rf
 
 SRC = main.c
