@@ -6,12 +6,18 @@
 /*   By: suibrahi <suibrahi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 14:42:10 by suibrahi          #+#    #+#             */
-/*   Updated: 2024/01/24 15:45:25 by suibrahi         ###   ########.fr       */
+/*   Updated: 2024/01/26 22:26:54 by suibrahi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+unsigned long long get_timestamp()
+{
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return (unsigned long long)(tv.tv_sec) * 1000 + (unsigned long long)(tv.tv_usec) / 1000;
+}
 
 void sleeping(t_philo *philo)
 {
@@ -29,9 +35,9 @@ void sleeping(t_philo *philo)
 void *philo_action(void *arg)
 {
 	t_philo *philo = (t_philo *)arg;
-	int i;
 	while (1)
 	{
+		    
 			pthread_mutex_lock(&philo->resources->locks_mutex[philo->left_fork]);
 			pthread_mutex_lock(&philo->resources->locks_mutex[philo->right_fork]);
 		if(philo->resources->forks[philo->left_fork] != -1 && philo->resources->forks[philo->right_fork] != -1)
@@ -40,15 +46,12 @@ void *philo_action(void *arg)
 			philo->resources->forks[philo->left_fork] = -1;
 			printf("philo %d picked up the right fork number %d \n", philo->id, philo->right_fork);
 			printf("philo %d picked up the left fork number %d \n", philo->id, philo->left_fork);
-			pthread_mutex_unlock(&philo->resources->locks_mutex[philo->right_fork]);
 			pthread_mutex_unlock(&philo->resources->locks_mutex[philo->left_fork]);
-				i = 0;
-				while(i < 4)
-				{
+			pthread_mutex_unlock(&philo->resources->locks_mutex[philo->right_fork]);
+				
 					printf("philo %d is eating \n", philo->id);
-					i++;
 					sleep(1);
-				}
+				
 				pthread_mutex_lock(&philo->resources->locks_mutex[philo->left_fork]);
 				pthread_mutex_lock(&philo->resources->locks_mutex[philo->right_fork]);
 				philo->resources->forks[philo->left_fork] = philo->left_fork;
@@ -57,23 +60,24 @@ void *philo_action(void *arg)
 				printf("philo %d dropped the left fork \n", philo->id);
 				pthread_mutex_unlock(&philo->resources->locks_mutex[philo->left_fork]);
 				pthread_mutex_unlock(&philo->resources->locks_mutex[philo->right_fork]);
-				// pthread_mutex_unlock(&philo->resources->fork_mutex);
-				// sleep(1);
-			
-			i = 0;
-			while(i < 4)
-			{
-				printf("philo %d is sleeping \n", philo->id);
-				i++;
-				sleep(1);
-			}
+				
+					//  unsigned long long current_time = get_timestamp();
+       				//  unsigned long long elapsed_time = current_time - start_time;
+       				 printf("philosopher %d sleeping ",  philo->id);
+					//printf("philo %d is sleeping \n`", philo->id);
+					sleep(1);
+				
+				
 			printf("philo %d is thinking \n", philo->id);
 		}	
 		else
 		{
-			pthread_mutex_unlock(&philo->resources->locks_mutex[philo->right_fork]);
 			pthread_mutex_unlock(&philo->resources->locks_mutex[philo->left_fork]);
+			pthread_mutex_unlock(&philo->resources->locks_mutex[philo->right_fork]);
+			usleep(300);
 		}
+
+			usleep(300);
 	}
 	return (NULL);
 }
@@ -132,17 +136,16 @@ int main(int ac, char **av)
 		}
 		while (i < philos->nums_of_philo)
 		{
-			//printf("%d\n",i);
-			philos[i].id = i + 1;
-			philos[i].left_fork = resources.forks[i];
-			// printf("giving philo <%d>left fork %d\n", i, philos[i].left_fork);
-			if(i == (philos->nums_of_philo))
-				philos[i].right_fork = 0;
-			else 
-				philos[i].right_fork = resources.forks[i + 1];
-			// printf("giving philo <%d>right fork %d\n", i, philos[i].right_fork);
-			philos[i].resources = &resources;
-			i++;
+				philos[i].id = i + 1;
+				philos[i].right_fork = i;
+				// printf("giving philo <%d>right fork %d\n", philos[i].id, philos[i].right_fork);
+				if(i == (philos->nums_of_philo - 1))
+					philos[i].left_fork = 0;
+				else 
+					philos[i].left_fork = i + 1;
+				// printf("giving philo <%d>left fork %d\n", philos[i].id, philos[i].left_fork);
+				philos[i].resources = &resources;
+				i++;
 		}
 		i = 0;
 		while (i < philos->nums_of_philo)
