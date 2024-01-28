@@ -6,7 +6,7 @@
 /*   By: suibrahi <suibrahi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 14:42:10 by suibrahi          #+#    #+#             */
-/*   Updated: 2024/01/26 22:26:54 by suibrahi         ###   ########.fr       */
+/*   Updated: 2024/01/28 05:29:08 by suibrahi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,50 +19,52 @@ unsigned long long get_timestamp()
     return (unsigned long long)(tv.tv_sec) * 1000 + (unsigned long long)(tv.tv_usec) / 1000;
 }
 
+
+
+void taking_fork(t_philo *philo)
+{
+	philo->resources->forks[philo->right_fork] = -1;
+	philo->resources->forks[philo->left_fork] = -1;
+	printf("philo %d picked up the right fork number %d \n", philo->id, philo->right_fork);
+	printf("philo %d picked up the left fork number %d \n", philo->id, philo->left_fork);
+	pthread_mutex_unlock(&philo->resources->locks_mutex[philo->left_fork]);
+	pthread_mutex_unlock(&philo->resources->locks_mutex[philo->right_fork]);
+}
+void dropping_fork(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->resources->locks_mutex[philo->left_fork]);
+	pthread_mutex_lock(&philo->resources->locks_mutex[philo->right_fork]);
+	philo->resources->forks[philo->left_fork] = philo->left_fork;
+	philo->resources->forks[philo->right_fork] = philo->right_fork;
+	printf("philo %d dropped the right fork \n", philo->id);
+	printf("philo %d dropped the left fork \n", philo->id);
+	pthread_mutex_unlock(&philo->resources->locks_mutex[philo->left_fork]);
+	pthread_mutex_unlock(&philo->resources->locks_mutex[philo->right_fork]);
+}
+void eating(t_philo *philo)
+{
+		printf("%llu philo %d is eating \n", (get_timestamp() - philo->start_time),philo->id);
+		usleep(philo->time_to_eat);
+}
 void sleeping(t_philo *philo)
 {
-	int i;
-
-	i = 0;
-	while(i < 10)
-	{
-		printf("%d philosopher sleeping\n", philo->id);
-		i++;
-		usleep(300);
-	}
-}
+		printf("%llu philo %d is eating \n", (get_timestamp() - philo->start_time),philo->id);
+		usleep(philo->time_to_eat);
+}x
 
 void *philo_action(void *arg)
 {
 	t_philo *philo = (t_philo *)arg;
 	while (1)
 	{
-		    
-			pthread_mutex_lock(&philo->resources->locks_mutex[philo->left_fork]);
-			pthread_mutex_lock(&philo->resources->locks_mutex[philo->right_fork]);
+		pthread_mutex_lock(&philo->resources->locks_mutex[philo->left_fork]);
+		pthread_mutex_lock(&philo->resources->locks_mutex[philo->right_fork]);
 		if(philo->resources->forks[philo->left_fork] != -1 && philo->resources->forks[philo->right_fork] != -1)
 		{
-			philo->resources->forks[philo->right_fork] = -1;
-			philo->resources->forks[philo->left_fork] = -1;
-			printf("philo %d picked up the right fork number %d \n", philo->id, philo->right_fork);
-			printf("philo %d picked up the left fork number %d \n", philo->id, philo->left_fork);
-			pthread_mutex_unlock(&philo->resources->locks_mutex[philo->left_fork]);
-			pthread_mutex_unlock(&philo->resources->locks_mutex[philo->right_fork]);
-				
-					printf("philo %d is eating \n", philo->id);
-					sleep(1);
-				
-				pthread_mutex_lock(&philo->resources->locks_mutex[philo->left_fork]);
-				pthread_mutex_lock(&philo->resources->locks_mutex[philo->right_fork]);
-				philo->resources->forks[philo->left_fork] = philo->left_fork;
-				philo->resources->forks[philo->right_fork] = philo->right_fork;
-				printf("philo %d dropped the right fork \n", philo->id);
-				printf("philo %d dropped the left fork \n", philo->id);
-				pthread_mutex_unlock(&philo->resources->locks_mutex[philo->left_fork]);
-				pthread_mutex_unlock(&philo->resources->locks_mutex[philo->right_fork]);
-				
-					//  unsigned long long current_time = get_timestamp();
-       				//  unsigned long long elapsed_time = current_time - start_time;
+			taking_fork(philo);
+			eating(philo);
+			dropping_fork(philo);
+			
        				 printf("philosopher %d sleeping ",  philo->id);
 					//printf("philo %d is sleeping \n`", philo->id);
 					sleep(1);
@@ -91,6 +93,7 @@ void	atoi_them_args(char **argv, t_philo	*philos_info)
 		philos_info[i].time_to_die = atoi(argv[2]);
 		philos_info[i].time_to_eat = atoi(argv[3]);
 		philos_info[i].time_to_slp = atoi(argv[4]);
+		philos_info[i].start_time = get_timestamp();
 		philos_info[i].left_fork = 0;
 		philos_info[i].right_fork = 0;
 		philos_info[i].is_dead = 0;
@@ -147,6 +150,7 @@ int main(int ac, char **av)
 				philos[i].resources = &resources;
 				i++;
 		}
+		printf("%llu \n", get_timestamp());
 		i = 0;
 		while (i < philos->nums_of_philo)
 		{

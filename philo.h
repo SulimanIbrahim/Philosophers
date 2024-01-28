@@ -6,7 +6,7 @@
 /*   By: suibrahi <suibrahi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 14:42:06 by suibrahi          #+#    #+#             */
-/*   Updated: 2024/01/24 18:49:00 by suibrahi         ###   ########.fr       */
+/*   Updated: 2024/01/28 04:59:25 by suibrahi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ typedef struct philosopher
 	int			time_to_eat;
 	int			time_to_slp;
 	int			num_of_meals;
+	unsigned long long			start_time;
 	int			is_dead;
 	int 		right_fork;
 	int			left_fork;
