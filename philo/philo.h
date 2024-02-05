@@ -6,7 +6,7 @@
 /*   By: suibrahi <suibrahi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 14:42:06 by suibrahi          #+#    #+#             */
-/*   Updated: 2024/02/05 14:19:29 by suibrahi         ###   ########.fr       */
+/*   Updated: 2024/02/06 00:24:49 by suibrahi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ typedef struct table
 {
 	int 				*forks;
 	bool 				is_done;
-	int 				death_flag;
 	pthread_mutex_t		*locks_mutex;
 	pthread_mutex_t		print_lock;
 	pthread_mutex_t		change_status;
@@ -79,13 +78,12 @@ void				free_thread(t_philo *philo);
 void				free_thread_error(t_philo *philo);
 int 				life(t_philo *philo);
 int 				picking_fork(t_philo *philo);
-void				dropping_fork(t_philo *philo);
+int					dropping_fork(t_philo *philo);
 void				printing_action(t_philo *philo, char *action, int color);
 unsigned long long	get_timestamp();
 void 				*philo_action(void *arg);
 int 				check_death(t_philo *philo);
+int 				check_death_main(t_philo *philo);
 int					my_usleep(unsigned long long duration, t_philo *philo);
-
-
 
 #endif

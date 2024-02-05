@@ -6,11 +6,18 @@
 /*   By: suibrahi <suibrahi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/30 01:33:40 by suibrahi          #+#    #+#             */
-/*   Updated: 2024/02/05 14:38:31 by suibrahi         ###   ########.fr       */
+/*   Updated: 2024/02/06 00:23:48 by suibrahi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+unsigned long long get_timestamp()
+{
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	return (unsigned long long)(tv.tv_sec) * 1000 + (unsigned long long)(tv.tv_usec) / 1000;
+}
 
 void free_thread(t_philo *philo)
 {

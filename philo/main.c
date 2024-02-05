@@ -6,7 +6,7 @@
 /*   By: suibrahi <suibrahi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 14:42:10 by suibrahi          #+#    #+#             */
-/*   Updated: 2024/02/05 13:58:03 by suibrahi         ###   ########.fr       */
+/*   Updated: 2024/02/06 00:23:42 by suibrahi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,19 +38,13 @@ static unsigned long long ft_atoi(char *str)
 	return (res);
 }
 
-unsigned long long get_timestamp()
-{
-	struct timeval tv;
-	gettimeofday(&tv, NULL);
-	return (unsigned long long)(tv.tv_sec) * 1000 + (unsigned long long)(tv.tv_usec) / 1000;
-}
-
-
 void printing_action(t_philo *philo, char *action, int color)
 {
-	pthread_mutex_lock(&philo->resources->print_lock);
+	pthread_mutex_lock(&philo->resources->change_status);
 	if (!(philo->resources->is_done))
 	{
+		pthread_mutex_unlock(&philo->resources->change_status);
+		pthread_mutex_lock(&philo->resources->print_lock);
 		if (color == 1)
 			printf("%s%llu %d %s%s\n", ANSI_COLOR_WHITE, (get_timestamp() - philo->start_time),
 				   philo->id, action, ANSI_COLOR_WHITE);
@@ -63,32 +57,33 @@ void printing_action(t_philo *philo, char *action, int color)
 		else if (color == 4)
 			printf("%s%llu %d %s%s\n", ANSI_COLOR_YELLOW, (get_timestamp() - philo->start_time),
 				   philo->id, action, ANSI_COLOR_YELLOW);
-	}
-	else if (philo->resources->death_flag == 0 && color == 5)
-	{
-		philo->resources->death_flag = 1;
-		printf("%s%llu %d %s%s\n", ANSI_COLOR_RED, (get_timestamp() - philo->start_time),
-			   philo->id, action, ANSI_COLOR_RED);
-	}
-	pthread_mutex_unlock(&philo->resources->print_lock);
+		pthread_mutex_unlock(&philo->resources->print_lock);
+	} else 
+		pthread_mutex_unlock(&philo->resources->change_status);
 }
 
+static int check_zero_values(char **argv)
+{
+	int i;
+
+	i = 1;
+	while (argv[i])
+	{	
+		if (ft_atoi(argv[i]) == 0)
+			return (1);
+		i++;
+	}
+	return (0);
+}
 
 
 int atoi_them_args(char **argv, t_philo *philos_info)
 {
-	int k;
-
-	k = 1;
-	while (argv[k])
-	{	if (ft_atoi(argv[k]) == 0)
-			return (1);
-		k++;
-	}
-
-	int philo_num = ft_atoi(argv[1]);
 	int i = 0;
-	while (i <= philo_num)
+
+	if(check_zero_values(argv) == 1)
+		return (1);
+	while (i <= philos_info->nums_of_philo)
 	{
 		philos_info[i].nums_of_philo = ft_atoi(argv[1]);
 		philos_info[i].time_to_die = ft_atoi(argv[2]);
@@ -120,12 +115,14 @@ int main(int ac, char **av)
 		if (nums_of_philo <= 0)
 			return (write(1, "No philo to create a thread\n", 27), 1);
 		philos = (t_philo *)calloc(nums_of_philo + 1, sizeof(t_philo));
-		philos->resources = calloc(1, sizeof(t_table));
 		if (!philos)
+			return (write(1, "malloc error\n", 13), 1);
+		philos->resources = calloc(1, sizeof(t_table));
+		if (!philos->resources)
 			return (write(1, "malloc error\n", 13), 1);
 		if (atoi_them_args(av, philos) == 1)
 			return (free_thread(philos), write(1, "Error\n", 6), 1);
-		philos->resources->death_flag = 0;
+		philos->resources->is_done = false;
 		create_philo_thread(philos, nums_of_philo);
 		free_thread(philos);
 	}

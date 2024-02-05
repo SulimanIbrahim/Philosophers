@@ -1,6 +1,5 @@
 NAME = philo
-CFLAGS = -Wall -Wextra -Werror -pthread 
-
+CFLAGS = -Wall -Wextra -Werror -pthread
 SRC = main.c\
 	threads.c\
 	error_handle.c\
