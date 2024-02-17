@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "semaphore.h": "c",
+        "philo.h": "c",
+        "__locale": "c"
+    }
+}
