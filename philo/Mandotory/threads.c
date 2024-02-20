@@ -6,7 +6,7 @@
 /*   By: suibrahi <suibrahi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/30 01:33:20 by suibrahi          #+#    #+#             */
-/*   Updated: 2024/02/17 06:02:49 by suibrahi         ###   ########.fr       */
+/*   Updated: 2024/02/21 03:35:53 by suibrahi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ void	*philo_action(void *arg)
 	philo = (t_philo *)arg;
 	if ((philo->id % 2) == 0)
 	{
-		usleep(50);
+		usleep(2000);
 	}
 	while (check_death(philo) != 1)
 	{
